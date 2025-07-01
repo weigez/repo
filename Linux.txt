@@ -1,0 +1,38 @@
+#!/bin/bash
+
+# 检查参数数量是否正确
+if [ "$#" -ne 2 ]; then
+    echo "用法: $0 <搜索文件> <搜索内容>"
+    exit 1
+fi
+
+search_file="$1"
+search_content="$2"
+output_file="search_results_$(date +%Y%m%d_%H%M%S).txt"
+
+# 检查文件是否存在
+if [ ! -f "$search_file" ]; then
+    echo "错误: 文件 '$search_file' 不存在"
+    exit 1
+fi
+
+# 执行搜索并保存结果
+echo "正在文件 '$search_file' 中搜索 '$search_content'..."
+echo "搜索结果 (文件: $search_file, 内容: '$search_content')" > "$output_file"
+echo "生成时间: $(date)" >> "$output_file"
+echo "----------------------------------------" >> "$output_file"
+
+# 使用grep搜索并显示行号
+grep -n "$search_content" "$search_file" | tee -a "$output_file"
+
+# 检查是否有结果
+if [ ! -s "$output_file" ]; then
+    echo "没有找到匹配的内容"
+    rm "$output_file"
+else
+    result_count=$(grep -c "$search_content" "$search_file")
+    echo "----------------------------------------" >> "$output_file"
+    echo "总共找到 $result_count 处匹配" >> "$output_file"
+    echo "结果已保存到: $output_file"
+    echo "总共找到 $result_count 处匹配"
+fi
